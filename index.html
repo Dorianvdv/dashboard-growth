@@ -870,25 +870,35 @@ async function getUserData() {
     const username = getUsernameFromURL();
     if (!username) return { message: 'no username' }
 
-    const url = "https://instagram-bulk-profile-scrapper.p.rapidapi.com/clients/api/ig/ig_profile";
-    const params = { ig: username, response_type: "short", corsEnabled: "true" };
+    const url = "https://instagram-public-bulk-scraper.p.rapidapi.com/v1/user_info";
+    const params = { username_or_id: username };
 
     const options = {
         method: "GET",
         headers: {
             "X-RapidAPI-Key": "1a78ab1e6dmshf05ff7c71870d40p140bcbjsn44864e406cfe",
-            "X-RapidAPI-Host": "instagram-bulk-profile-scrapper.p.rapidapi.com",
+            "X-RapidAPI-Host": "instagram-public-bulk-scraper.p.rapidapi.com",
         },
     };
 
     const r = await fetch(`${url}?${new URLSearchParams(params)}`, options)
         .then(response => response.json())
         .then(data => {
-            var res = { message: 'success', data: data?.[0] }
+            // New API returns data.data.user
+            const user = data?.data?.user;
+            if (!user) return { message: 'no user found' }
+            var res = {
+                message: 'success',
+                data: {
+                    username: user.username,
+                    full_name: user.full_name,
+                    follower_count: user.edge_followed_by?.count,
+                    profile_pic_url: user.profile_pic_url_hd || user.profile_pic_url,
+                }
+            }
             return res
         })
         .catch(error => {
-            // Handle errors
             console.log(error);
             return { message: error?.message }
         });
