@@ -893,7 +893,7 @@ async function getUserData() {
                     username: user.username,
                     full_name: user.full_name,
                     follower_count: user.follower_count,
-                    profile_pic_url: user.hd_profile_pic_url_info?.url || user.profile_pic_url,
+                    profile_pic_url: user.profile_pic_url,
                 }
             }
             return res
@@ -963,7 +963,12 @@ window.addEventListener('DOMContentLoaded', async () => {
             var without_GYS = numFormatter(withoutGYS)
             var with_GYSVal = `${numFormatter(withGYS)}${withGYS >= 1000000 ? '+' : ''}`;
 
-            document.getElementById('profile_pic_url').src = profile_pic_url
+            const imgEl = document.getElementById('profile_pic_url')
+            const proxiedUrl = `https://wsrv.nl/?url=${encodeURIComponent(profile_pic_url)}&w=80&h=80&fit=cover`
+            imgEl.src = proxiedUrl
+            imgEl.onerror = () => {
+                imgEl.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(full_name || username)}&size=80&background=EF5F3C&color=fff&rounded=true`
+            }
             document.getElementById('full_name').textContent = full_name
             document.getElementById('username').textContent = `@${username}`
             document.getElementById('username1').textContent = `@${username}`
