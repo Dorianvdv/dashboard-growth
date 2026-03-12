@@ -884,16 +884,16 @@ async function getUserData() {
     const r = await fetch(`${url}?${new URLSearchParams(params)}`, options)
         .then(response => response.json())
         .then(data => {
-            // New API returns data.data.user
-            const user = data?.data?.user;
+            // API returns data directly under data{}
+            const user = data?.data;
             if (!user) return { message: 'no user found' }
             var res = {
                 message: 'success',
                 data: {
                     username: user.username,
                     full_name: user.full_name,
-                    follower_count: user.edge_followed_by?.count,
-                    profile_pic_url: user.profile_pic_url_hd || user.profile_pic_url,
+                    follower_count: user.follower_count,
+                    profile_pic_url: user.hd_profile_pic_url_info?.url || user.profile_pic_url,
                 }
             }
             return res
